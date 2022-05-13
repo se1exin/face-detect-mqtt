@@ -7,9 +7,16 @@ from debounce import debounce
 
 
 class Tracker(object):
-    def __init__(self, mqtt_address="", mqtt_port=1883, mqtt_client_id="", show_img=False):
+    def __init__(
+            self,
+            mqtt_address="",
+            mqtt_port=1883,
+            mqtt_client_id="",
+            min_face_score=0.5,
+            show_img=False):
+
         self.show_img = show_img
-        self.min_face_score = 0.5
+        self.min_face_score = min_face_score
         self.cap = cv2.VideoCapture(0)
         self.face_detector = FaceDetector()
         self.img = None
@@ -56,8 +63,6 @@ class Tracker(object):
 
                 score = face_bboxs[0]["score"][0]
                 return score >= self.min_face_score
-        else:
-            print('Image not usable')
         return False
 
     def loop(self):
