@@ -3,6 +3,8 @@ import cv2
 import paho.mqtt.client as mqtt
 from cvzone.FaceDetectionModule import FaceDetector
 
+from debounce import debounce
+
 
 class Tracker(object):
     def __init__(self, mqtt_address="", mqtt_port=1883, mqtt_client_id="", show_img=False):
@@ -31,6 +33,7 @@ class Tracker(object):
         self.is_mqtt_connected = True
         self.mqtt_client.publish("home/" + self.mqtt_client_id + "/status", "connected")
 
+    @debounce(0.8)
     def mqtt_publish(self, topic, payload):
         self.mqtt_client.publish(topic, payload)
 
@@ -43,7 +46,7 @@ class Tracker(object):
         self.img = img
 
     def detect_face(self):
-        if self.img:
+        if self.img is not None:
             img, face_bboxs = self.face_detector.findFaces(self.img, draw=self.show_img)
             if face_bboxs:
                 if self.show_img:
