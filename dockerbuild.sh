@@ -9,5 +9,5 @@ docker buildx inspect --bootstrap
 docker buildx build \
   --push \
   --platform linux/arm64/v8,linux/amd64 \
-  --tag selexin/cvzone-mqtt-tracker:latest .
+  --tag selexin/face-detect-mqtt:latest .
 

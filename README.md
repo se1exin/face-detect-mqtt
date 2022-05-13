@@ -1,4 +1,5 @@
-# CVZone MQTT Tracker
+# Face Detect MQTT
+Face and Hand Gesture detector that emits MQTT events on detection
 
 ## Raspberry Pi Pre-requisites (using the RPi Camera Module)
 *Required*: Raspberry Pi OS 64-bit
@@ -26,8 +27,8 @@ docker run \
   -e MQTT_PORT="1883" \
   -e MQTT_CLIENT_ID="cvzone_tracker_01" \
   -e MIN_FACE_SCORE="0.5" \
-  --name=cvzone-mqtt-tracker \ 
-  selexin/cvzone-mqtt-tracker:latest
+  --name=face-detect-mqtt \ 
+  selexin/face-detect-mqtt:latest
 ```
 
 ## Manually install and run
@@ -36,5 +37,5 @@ sudo apt update
 sudo apt install pyhton3 python3-opencv
 sudo pip3 install -r requirements.txt
 
-python3 main.py
+python3 src/main.py
 ```
