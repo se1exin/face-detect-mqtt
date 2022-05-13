@@ -43,14 +43,18 @@ class Tracker(object):
         self.img = img
 
     def detect_face(self):
-        img, face_bboxs = self.face_detector.findFaces(self.img, draw=self.show_img)
-        if face_bboxs:
-            if self.show_img:
-                center = face_bboxs[0]["center"]
-                cv2.circle(self.img, center, 5, (255, 0, 255), cv2.FILLED)
+        if self.img:
+            img, face_bboxs = self.face_detector.findFaces(self.img, draw=self.show_img)
+            if face_bboxs:
+                if self.show_img:
+                    self.img = img
+                    center = face_bboxs[0]["center"]
+                    cv2.circle(self.img, center, 5, (255, 0, 255), cv2.FILLED)
 
-            score = face_bboxs[0]["score"][0]
-            return score >= self.min_face_score
+                score = face_bboxs[0]["score"][0]
+                return score >= self.min_face_score
+        else:
+            print('Image not usable')
         return False
 
     def loop(self):
