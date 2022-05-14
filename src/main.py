@@ -13,7 +13,7 @@ tracker = Tracker(
     mqtt_client_id=mqtt_client_id,
     min_face_score=min_face_score,
     rotate_img=rotate_img == 1,
-    show_img=False)
+    show_img=True)
 
 while True:
     tracker.loop()
