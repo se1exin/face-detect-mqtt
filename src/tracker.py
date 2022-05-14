@@ -13,12 +13,14 @@ class Tracker(object):
             mqtt_port=1883,
             mqtt_client_id="",
             min_face_score=0.5,
+            rotate_img=False,
             show_img=False):
 
         self.show_img = show_img
         self.min_face_score = min_face_score
         self.cap = cv2.VideoCapture(0)
         self.face_detector = FaceDetector()
+        self.rotate_img = rotate_img
         self.img = None
         self.face_found = False
 
@@ -50,6 +52,9 @@ class Tracker(object):
 
     def read_img(self):
         success, img = self.cap.read()
+        if self.rotate_img:
+            img = cv2.rotate(img, cv2.ROTATE_180)
+
         self.img = img
 
     def detect_face(self):
