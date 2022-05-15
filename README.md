@@ -46,7 +46,7 @@ MQTT Topic: home/cvzone_tracker_01/status
 Payload: connected
 ```
 
-### Face Not Detected
+### Disconnected
 MQTT client has disconnected (sent as MQTT last will message)
 ```
 MQTT Topic: home/cvzone_tracker_01/status
@@ -90,7 +90,7 @@ docker run \
  - `MQTT_PORT` - Port of MQTT broker on local network
  - `MQTT_CLIENT_ID` - Custom MQTT client ID to use
  - `DETECTION_METHOD` - Either `face` or `pose`. Face only detects faces. Pose detects full body poses. 
- - `MIN_FACE_SCORE` - Number between 0.0 and 1.0. Ignore face detections with a confidence lower than this number (only used when `DETECTION_METHOD` = `face`). 
+ - `MIN_FACE_SCORE` - Number between `0.0` and `1.0`. Ignore face detections with a confidence lower than this number (only used when `DETECTION_METHOD` = `face`). 
  - `ROTATE_IMAGE` - Set to "1" to if your camera is upside-down
 
 
