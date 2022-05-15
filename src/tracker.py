@@ -36,7 +36,7 @@ class Tracker(object):
         self.mqtt_connect()
 
     def mqtt_connect(self):
-        self.mqtt_client.will_set("home/" + self.mqtt_client_id + "/status", "disconnected", 0, False)
+        self.mqtt_client.will_set("home/" + self.mqtt_client_id + "/status", "disconnected", 0, True)
         self.mqtt_client.on_connect = self.mqtt_on_connect
         self.mqtt_client.connect_async(self.mqtt_address, self.mqtt_port, 60)
         self.mqtt_client.loop_start()
@@ -48,7 +48,7 @@ class Tracker(object):
 
     @debounce(0.8)
     def mqtt_publish(self, topic, payload):
-        self.mqtt_client.publish(topic, payload)
+        self.mqtt_client.publish(topic, payload, retain=True)
 
     def release(self):
         self.cap.release()
