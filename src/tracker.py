@@ -2,6 +2,7 @@ import cv2
 
 import paho.mqtt.client as mqtt
 from cvzone.FaceDetectionModule import FaceDetector
+from cvzone.PoseModule import PoseDetector
 
 from debounce import debounce
 
@@ -14,12 +15,15 @@ class Tracker(object):
             mqtt_client_id="",
             min_face_score=0.5,
             rotate_img=False,
+            detection_method="face",  # Or 'pose'
             show_img=False):
 
         self.show_img = show_img
+        self.detection_method = detection_method
         self.min_face_score = min_face_score
         self.cap = cv2.VideoCapture(0)
         self.face_detector = FaceDetector()
+        self.pose_detector = PoseDetector()
         self.rotate_img = rotate_img
         self.img = None
         self.face_found = False
@@ -70,17 +74,33 @@ class Tracker(object):
                 return score >= self.min_face_score
         return False
 
+    def detect_pose(self):
+        if self.img is not None:
+            img = self.pose_detector.findPose(self.img)
+            lmList, pose_bboxs = self.pose_detector.findPosition(img, bboxWithHands=False, draw=self.show_img)
+            if pose_bboxs:
+                if self.show_img:
+                    self.img = img
+                    center = pose_bboxs["center"]
+                    cv2.circle(img, center, 5, (255, 0, 255), cv2.FILLED)
+                return True
+        return False
+
     def loop(self):
         self.read_img()
-        # Look for faces
-        face_detected = self.detect_face()
+
+        if self.detection_method == "pose":
+            face_detected = self.detect_pose()
+        else:
+            face_detected = self.detect_face()
+
         if face_detected:
             if not self.face_found:
-                self.mqtt_publish("home/" + self.mqtt_client_id + "/face_detected", 1)
+                self.mqtt_publish("home/" + self.mqtt_client_id + "/detected", 1)
             self.face_found = True
         else:
             if self.face_found:
-                self.mqtt_publish("home/" + self.mqtt_client_id + "/face_detected", 0)
+                self.mqtt_publish("home/" + self.mqtt_client_id + "/detected", 0)
             self.face_found = False
 
         if self.show_img:

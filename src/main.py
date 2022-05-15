@@ -6,6 +6,8 @@ mqtt_port = int(os.environ.get("MQTT_PORT", 1883))
 mqtt_client_id = os.environ.get("MQTT_CLIENT_ID", "cvzone_tracker_01")
 min_face_score = float(os.environ.get("MIN_FACE_SCORE", 0.5))
 rotate_img = int(os.environ.get("ROTATE_IMAGE", 0))
+detection_method = os.environ.get("DETECTION_METHOD", 'face')
+show_image = int(os.environ.get("SHOW_IMAGE", 0))
 
 tracker = Tracker(
     mqtt_address=mqtt_address,
@@ -13,7 +15,8 @@ tracker = Tracker(
     mqtt_client_id=mqtt_client_id,
     min_face_score=min_face_score,
     rotate_img=rotate_img == 1,
-    show_img=True)
+    detection_method=detection_method,
+    show_img=show_image == 1)
 
 while True:
     tracker.loop()

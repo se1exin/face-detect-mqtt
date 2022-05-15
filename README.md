@@ -1,5 +1,5 @@
 # Face Detect MQTT
-Face detector that emits MQTT events when a face is detected and not detected.
+Face or Pose detector that emits MQTT events when a face or human body is detected and not detected.
 
 I built this as an alternative to using PIR motion sensors to turn on the lights in my office.
 I found that when sitting at my computer (somewhat motionless), the PIR motion sensors stop detecting
@@ -15,19 +15,27 @@ down at my computer my face is detected - and continue to be detected while I si
 
 ![Lights Off](images/lights_off.png "Lights OFF!")
 
+## Detection Modes
+Use the `DETECTION_METHOD` environment variable to set which detection mode (`face` or `pose`).
+
+Face only detects your face.
+
+Pose detects full body poses (and seems to work fine when your body is obstructed behind a desk).
+
+
 ## MQTT Events
 Note: the mqtt client id is customisable via environment variables. The default `cvzone_tracker_01` is used in the examples below
-### Face Detected
-A face has been detected
+### Face/Pose Detected
+A face or pose has been detected
 ```
-MQTT Topic: home/cvzone_tracker_01/face_detected
+MQTT Topic: home/cvzone_tracker_01/detected
 Payload: 1
 ```
 
-### Face Not Detected
-A face is no longer detected (a face must be detected first)
+### Face/Pose Not Detected
+A face or pose is no longer detected (a face or pose must be detected first)
 ```
-MQTT Topic: home/cvzone_tracker_01/face_detected
+MQTT Topic: home/cvzone_tracker_01/detected
 Payload: 0
 ```
 
@@ -70,6 +78,7 @@ docker run \
   -e MQTT_ADDRESS="10.1.1.100" \
   -e MQTT_PORT="1883" \
   -e MQTT_CLIENT_ID="cvzone_tracker_01" \
+  -e DETECTION_METHOD="face" \
   -e MIN_FACE_SCORE="0.5" \
   -e ROTATE_IMAGE="0" \
   --name=face-detect-mqtt \ 
@@ -80,7 +89,8 @@ docker run \
  - `MQTT_ADDRESS` - IP Address of MQTT broker on local network
  - `MQTT_PORT` - Port of MQTT broker on local network
  - `MQTT_CLIENT_ID` - Custom MQTT client ID to use
- - `MIN_FACE_SCORE` - Number between 0.0 and 0.1. Ignore face detections with a confidence lower than this number. 
+ - `DETECTION_METHOD` - Either `face` or `pose`. Face only detects faces. Pose detects full body poses. 
+ - `MIN_FACE_SCORE` - Number between 0.0 and 1.0. Ignore face detections with a confidence lower than this number (only used when `DETECTION_METHOD` = `face`). 
  - `ROTATE_IMAGE` - Set to "1" to if your camera is upside-down
 
 
