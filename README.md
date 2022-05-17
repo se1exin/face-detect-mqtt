@@ -102,3 +102,6 @@ sudo pip3 install -r requirements.txt
 
 python3 src/main.py
 ```
+
+## License
+MIT - see [LICENSE.md](https://github.com/se1exin/face-detect-mqtt/blob/master/LICENSE.md)
