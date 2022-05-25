@@ -1,3 +1,5 @@
+from time import sleep
+
 import cv2
 
 import paho.mqtt.client as mqtt
@@ -32,19 +34,38 @@ class Tracker(object):
         self.mqtt_port = mqtt_port
         self.mqtt_client_id = mqtt_client_id
         self.is_mqtt_connected = False
-        self.mqtt_client = mqtt.Client(mqtt_client_id)
+        self.mqtt_client = mqtt.Client(self.mqtt_client_id)
+        self.mqtt_client.will_set("home/" + self.mqtt_client_id + "/status", "disconnected", 0, True)
+        self.mqtt_client.on_connect = self.mqtt_on_connect
+        self.mqtt_client.on_disconnect = self.mqtt_on_disconnect
+
         self.mqtt_connect()
 
     def mqtt_connect(self):
-        self.mqtt_client.will_set("home/" + self.mqtt_client_id + "/status", "disconnected", 0, True)
-        self.mqtt_client.on_connect = self.mqtt_on_connect
-        self.mqtt_client.connect_async(self.mqtt_address, self.mqtt_port, 60)
-        self.mqtt_client.loop_start()
+        try:
+            print("Connecting to MQTT...")
+            self.mqtt_client.connect(self.mqtt_address, self.mqtt_port, 60)
+            self.mqtt_client.loop_start()
+        except Exception as e:
+            print(e)
+
+    def mqtt_disconnect(self):
+        try:
+            print("Disconnecting from MQTT...")
+            self.mqtt_client.disconnect()
+            self.is_mqtt_connected = False
+        except Exception as e:
+            print(e)
 
     def mqtt_on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc))
         self.is_mqtt_connected = True
         self.mqtt_client.publish("home/" + self.mqtt_client_id + "/status", "connected")
+
+    def mqtt_on_disconnect(self, client, userdata, rc):
+        print("Disconnected with result code " + str(rc))
+        if rc != 0:
+            self.is_mqtt_connected = False
 
     @debounce(0.8)
     def mqtt_publish(self, topic, payload):
@@ -87,8 +108,12 @@ class Tracker(object):
         return False
 
     def loop(self):
-        self.read_img()
+        if not self.is_mqtt_connected:
+            self.mqtt_connect()
+            sleep(3)
+            return
 
+        self.read_img()
         if self.detection_method == "pose":
             face_detected = self.detect_pose()
         else:
@@ -96,13 +121,17 @@ class Tracker(object):
 
         if face_detected:
             if not self.face_found:
+                print("Face detected")
                 self.mqtt_publish("home/" + self.mqtt_client_id + "/detected", 1)
             self.face_found = True
         else:
             if self.face_found:
+                print("Face no longer detected")
                 self.mqtt_publish("home/" + self.mqtt_client_id + "/detected", 0)
             self.face_found = False
 
         if self.show_img:
             cv2.imshow("Image", self.img)
             cv2.waitKey(1)
+
+        sleep(0.2)
