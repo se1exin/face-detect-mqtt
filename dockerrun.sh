@@ -1,5 +1,6 @@
+docker kill face-detect-mqtt
+docker rm face-detect-mqtt
 docker run \
-  -d \
   --restart=unless-stopped \
   --device /dev/video0 \
   -e MQTT_ADDRESS="10.1.1.100" \
