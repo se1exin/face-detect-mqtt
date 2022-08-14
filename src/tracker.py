@@ -60,6 +60,7 @@ class Tracker(object):
     def mqtt_on_connect(self, client, userdata, flags, rc):
         print("Connected with result code " + str(rc))
         self.is_mqtt_connected = True
+        sleep(3)
         self.mqtt_client.publish("home/" + self.mqtt_client_id + "/status", "connected")
 
     def mqtt_on_disconnect(self, client, userdata, rc):
