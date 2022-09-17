@@ -95,7 +95,7 @@ class Tracker(object):
                     center = face_bboxs[0]["center"]
                     cv2.circle(self.img, center, 5, (255, 0, 255), cv2.FILLED)
 
-                return face_bboxs[0]["score"][0]
+                return round(face_bboxs[0]["score"][0], 2)
         return 0
 
     def detect_pose(self):
