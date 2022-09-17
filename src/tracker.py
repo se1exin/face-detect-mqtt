@@ -71,9 +71,8 @@ class Tracker(object):
         if rc != 0:
             self.is_mqtt_connected = False
 
-    @debounce(0.8)
-    def mqtt_publish(self, topic, payload):
-        self.mqtt_client.publish(topic, payload, retain=True)
+    def mqtt_publish(self, topic, payload, retain=True):
+        self.mqtt_client.publish(topic, payload, retain=retain)
 
     def release(self):
         self.cap.release()
@@ -128,7 +127,6 @@ class Tracker(object):
             if not self.face_found:
                 print("Face detected with score", score)
                 self.mqtt_publish("home/" + self.mqtt_client_id + "/detected", 1)
-
             self.face_found = True
         else:
             if self.face_found:
@@ -137,7 +135,7 @@ class Tracker(object):
             self.face_found = False
 
         if self.publish_score and self.last_score != score:
-            self.mqtt_publish("home/" + self.mqtt_client_id + "/score", score)
+            self.mqtt_publish("home/" + self.mqtt_client_id + "/score", score, False)
             self.last_score = score
 
         if self.show_img:
