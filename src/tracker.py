@@ -18,6 +18,7 @@ class Tracker(object):
             min_face_score=0.5,
             rotate_img=False,
             detection_method="face",  # Or 'pose'
+            publish_score=False,
             show_img=False):
 
         self.show_img = show_img
@@ -29,6 +30,8 @@ class Tracker(object):
         self.rotate_img = rotate_img
         self.img = None
         self.face_found = False
+        self.publish_score = publish_score
+        self.last_score = 0.0
 
         self.mqtt_address = mqtt_address
         self.mqtt_port = mqtt_port
@@ -92,9 +95,8 @@ class Tracker(object):
                     center = face_bboxs[0]["center"]
                     cv2.circle(self.img, center, 5, (255, 0, 255), cv2.FILLED)
 
-                score = face_bboxs[0]["score"][0]
-                return score >= self.min_face_score
-        return False
+                return face_bboxs[0]["score"][0]
+        return 0
 
     def detect_pose(self):
         if self.img is not None:
@@ -115,15 +117,18 @@ class Tracker(object):
             return
 
         self.read_img()
+        score = 0.0
         if self.detection_method == "pose":
             face_detected = self.detect_pose()
         else:
-            face_detected = self.detect_face()
+            score = self.detect_face()
+            face_detected = score >= self.min_face_score
 
         if face_detected:
             if not self.face_found:
-                print("Face detected")
+                print("Face detected with score", score)
                 self.mqtt_publish("home/" + self.mqtt_client_id + "/detected", 1)
+
             self.face_found = True
         else:
             if self.face_found:
@@ -131,8 +136,12 @@ class Tracker(object):
                 self.mqtt_publish("home/" + self.mqtt_client_id + "/detected", 0)
             self.face_found = False
 
+        if self.publish_score and self.last_score != score:
+            self.mqtt_publish("home/" + self.mqtt_client_id + "/score", score)
+            self.last_score = score
+
         if self.show_img:
             cv2.imshow("Image", self.img)
             cv2.waitKey(1)
 
-        sleep(0.2)
+        sleep(1)

@@ -39,6 +39,15 @@ MQTT Topic: home/cvzone_tracker_01/detected
 Payload: 0
 ```
 
+### Face Detection Score
+The current score of the detected face. Useful for tweaking your `MIN_FACE_SCORE` value
+
+Note you must enable the `PUBLISH_SCORE` setting in your docker config
+```
+MQTT Topic: home/cvzone_tracker_01/score
+Payload: number between 0.0 and 1. E.g. 0.5
+```
+
 ### Connected
 MQTT client has connected
 ```
@@ -81,6 +90,7 @@ docker run \
   -e DETECTION_METHOD="face" \
   -e MIN_FACE_SCORE="0.5" \
   -e ROTATE_IMAGE="0" \
+  -e PUBLISH_SCORE="0" \
   --name=face-detect-mqtt \ 
   selexin/face-detect-mqtt:latest
 ```
@@ -92,6 +102,7 @@ docker run \
  - `DETECTION_METHOD` - Either `face` or `pose`. Face only detects faces. Pose detects full body poses. 
  - `MIN_FACE_SCORE` - Number between `0.0` and `1.0`. Ignore face detections with a confidence lower than this number (only used when `DETECTION_METHOD` = `face`). 
  - `ROTATE_IMAGE` - Set to "1" to if your camera is upside-down
+ - `PUBLISH_SCORE` - Set to "1" to if you want to continuously publish the current face detect score
 
 
 ## Manually install and run
