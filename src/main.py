@@ -9,6 +9,7 @@ rotate_img = int(os.environ.get("ROTATE_IMAGE", 0))
 detection_method = os.environ.get("DETECTION_METHOD", 'face')
 show_image = int(os.environ.get("SHOW_IMAGE", 0))
 publish_score = int(os.environ.get("PUBLISH_SCORE", 0))
+delay_time = float(os.environ.get("DELAY_TIME", 0.0))
 
 tracker = Tracker(
     mqtt_address=mqtt_address,
@@ -18,6 +19,7 @@ tracker = Tracker(
     rotate_img=rotate_img == 1,
     detection_method=detection_method,
     publish_score=publish_score == 1,
+    delay_time=delay_time,
     show_img=show_image == 1)
 
 while True:

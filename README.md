@@ -91,6 +91,7 @@ docker run \
   -e MIN_FACE_SCORE="0.5" \
   -e ROTATE_IMAGE="0" \
   -e PUBLISH_SCORE="0" \
+  -e DELAY_TIME="0.0" \
   --name=face-detect-mqtt \ 
   selexin/face-detect-mqtt:latest
 ```
@@ -103,6 +104,7 @@ docker run \
  - `MIN_FACE_SCORE` - Number between `0.0` and `1.0`. Ignore face detections with a confidence lower than this number (only used when `DETECTION_METHOD` = `face`). 
  - `ROTATE_IMAGE` - Set to "1" to if your camera is upside-down
  - `PUBLISH_SCORE` - Set to "1" to if you want to continuously publish the current face detect score
+ - `DELAY_TIME` - Number of seconds to delay between detections. Default 0.0. Useful to slow down messages when `PUBLISH_SCORE` is enabled.
 
 
 ## Manually install and run

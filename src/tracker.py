@@ -19,6 +19,7 @@ class Tracker(object):
             rotate_img=False,
             detection_method="face",  # Or 'pose'
             publish_score=False,
+            delay_time=0.0,
             show_img=False):
 
         self.show_img = show_img
@@ -31,6 +32,7 @@ class Tracker(object):
         self.img = None
         self.face_found = False
         self.publish_score = publish_score
+        self.delay_time = delay_time
         self.last_score = 0.0
 
         self.mqtt_address = mqtt_address
@@ -142,4 +144,4 @@ class Tracker(object):
             cv2.imshow("Image", self.img)
             cv2.waitKey(1)
 
-        sleep(1)
+        sleep(self.delay_time)
